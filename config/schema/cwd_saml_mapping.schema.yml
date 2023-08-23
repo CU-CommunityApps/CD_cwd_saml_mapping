@@ -1,0 +1,18 @@
+cwd_saml_mapping.saml_role_mapping.*:
+  type: config_entity
+  label: SAML Role Mapping
+  mapping:
+    id:
+      type: string
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: string
+    role:
+      type: string
+    samlprop:
+      type: string
+    values:
+      type: string

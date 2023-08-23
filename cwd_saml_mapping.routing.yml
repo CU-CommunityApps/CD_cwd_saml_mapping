@@ -1,0 +1,41 @@
+entity.saml_role_mapping.collection:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-role-mapping'
+  defaults:
+    _entity_list: 'saml_role_mapping'
+    _title: 'SAML Role Mapping configuration'
+  requirements:
+    _permission: 'administer saml_role_mapping'
+
+entity.saml_role_mapping.add_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-role-mapping/add'
+  defaults:
+    _entity_form: 'saml_role_mapping.add'
+    _title: 'Add a saml role mapping'
+  requirements:
+    _permission: 'administer saml_role_mapping'
+
+entity.saml_role_mapping.edit_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-role-mapping/{saml_role_mapping}'
+  defaults:
+    _entity_form: 'saml_role_mapping.edit'
+    _title: 'Edit a saml role mapping'
+  requirements:
+    _permission: 'administer saml_role_mapping'
+
+entity.saml_role_mapping.delete_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-role-mapping/{saml_role_mapping}/delete'
+  defaults:
+    _entity_form: 'saml_role_mapping.delete'
+    _title: 'Delete a saml role mapping'
+  requirements:
+    _permission: 'administer saml_role_mapping'
+
+cwd_saml_mapping.config_form:
+  path: 'admin/config/people/cwd-saml-mapping-config'
+  defaults:
+    _form: '\Drupal\cwd_saml_mapping\Form\CWDSamlMappingConfigForm'
+    _title: 'CWD Saml Mapping Config Form'
+  requirements:
+    _permission: 'administer saml_role_mapping'
+  options:
+    _admin_route: TRUE

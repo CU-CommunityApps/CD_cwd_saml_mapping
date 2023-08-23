@@ -1,0 +1,7 @@
+name: 'cwd_saml_mapping'
+type: module
+description: 'Module to hook into saml_sp and update user information'
+package: Custom
+core_version_requirement: ^10
+dependencies:
+  - saml_sp:saml_sp
