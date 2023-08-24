@@ -11,18 +11,18 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   // Logic for adding and removing users from roles via saml_role_mapping config entities
   //-------------------------------------------------------------------------------------
   //Get all our saml_role_mapping configs for processing
-  $entity_ids = \Drupal::entityQuery('saml_role_mapping')->condition('status',1)->execute();
+  $entity_ids = \Drupal::entityQuery('saml_role_mapping')->condition('status', 1)->execute();
   $configs = \Drupal::entityTypeManager()->getStorage('saml_role_mapping')->loadMultiple($entity_ids);
 
   //Variables for storing data and signaling a user save is needed.
   $saveUser = false;
   $samlManagedRoles = [];
   $userRolesToAdd = [];
-  
-  foreach($configs as $role_assigment_config) {
+
+  foreach ($configs as $role_assigment_config) {
     //Create a list of all roles managed by saml properties
     $role = $role_assigment_config->get('role');
-    if(!in_array($role,$samlManagedRoles)) {
+    if (!in_array($role, $samlManagedRoles)) {
       $samlManagedRoles[] = $role;
     }
 
@@ -30,39 +30,40 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
     $samlprop = $role_assigment_config->get('samlprop');
 
     //Drupal's accepted values we configure on our end
-    $values = explode("\r\n",$role_assigment_config->get('values'));
-    
+    $values = explode("\r\n", $role_assigment_config->get('values'));
+
     //This condition should catch a miss-configuarion of a saml mapping
-    if(array_key_exists($samlprop,$attributes) && is_null($attributes[$samlprop])) {
+    if (array_key_exists($samlprop, $attributes) && is_null($attributes[$samlprop])) {
       continue;
     }
 
     //If saml attribute has more than one value in a field we will look at all values
-    if(count($attributes[$samlprop]) > 1) {
+    if (count($attributes[$samlprop]) > 1) {
       $saml_pro_data = $attributes[$samlprop];
-      $needsRole = count(array_intersect($saml_pro_data,$values)) > 0;
-    } else {
+      $needsRole = count(array_intersect($saml_pro_data, $values)) > 0;
+    }
+    else {
       //All others we look for a single value in our accepted values for the SAML property
       $saml_pro_data = $attributes[$samlprop][0];
-      $needsRole = in_array($saml_pro_data,$values);
+      $needsRole = in_array($saml_pro_data, $values);
     }
 
     //If condition is met to add this role add to our array for processing after all configs have been evaluated
-    if($needsRole) {
+    if ($needsRole) {
       $userRolesToAdd[] = $role;
     }
   } // end of for loop processing saml_role_mapping configs
 
   //Take and add roles to user as needed
-  foreach($userRolesToAdd as $roleToAdd) {
+  foreach ($userRolesToAdd as $roleToAdd) {
     if (!$user->hasRole($roleToAdd)) {
       $user->addRole($roleToAdd);
       $saveUser = true;
-    }  
+    }
   }
 
   //Compute roles we need to take away and remove if needed
-  $userRolesToRemove = array_diff($samlManagedRoles,$userRolesToAdd);
+  $userRolesToRemove = array_diff($samlManagedRoles, $userRolesToAdd);
   foreach ($userRolesToRemove as $roleToRemove) {
     if ($user->hasRole($roleToRemove)) {
       $user->removeRole($roleToRemove);
@@ -86,7 +87,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   //-------------------------------------------------------------------------------------
   //Save user is we need to retain changes
   //-------------------------------------------------------------------------------------
-  if($saveUser) {
+  if ($saveUser) {
     $user->save();
   }
   //-------------------------------------------------------------------------------------
@@ -98,7 +99,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
 function cwd_saml_mapping_preprocess_item_list(&$variables) {
   //If we are not on the user login page abandon this hook.
   $current_route_name = \Drupal::service('current_route_match')->getRouteName();
-  if($current_route_name != "user.login") {
+  if ($current_route_name != "user.login") {
     return;
   }
 
@@ -109,27 +110,46 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
     //Loop through links and remove ones that contain 'test'
     foreach ($variables['items'] as $index => $link) {
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
+      $idp_class = strtolower(preg_replace("/\s*/", "_", $idp_name));
       if ($idp_name && str_contains("test", strtolower(($idp_name)))) {
         unset($variables['items'][$index]);
       }
+      else {
+        $link['value']->setText(new TranslatableMarkup($idp_name . " Login"));
+        $link['attributes']->addClass(['login-link-button', $idp_class]);
+      }
     }
-  } else {
+  }
+  else {
     //Loop through links and remove ones that contain 'prod'
-    foreach($variables['items'] as $index => $link) {
+    foreach ($variables['items'] as $index => $link) {
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
-      if($idp_name && str_contains(strtolower(($idp_name)), "prod")) {
+      $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
+      if ($idp_name && str_contains(strtolower(($idp_name)), "prod")) {
         unset($variables['items'][$index]);
+      }
+      else {
+        $link['value']->setText(new TranslatableMarkup($idp_name . " Login"));
+        $link['attributes']->addClass(['login-link-button', $idp_class]);
       }
     }
   }
 }
 
-//Remove local login form?
-// function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
-//   if($form_id == 'user_login_form') {
-//     unset($form['#submit']);
-//     unset($form['name']);
-//     unset($form['pass']);
-//     unset($form['actions']);
-//   }
-// }
+// Remove local login form?
+function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'user_login_form') {
+    $form['new'] = array(
+      '#markup' => '<hr/><h2>Log in by SSO:</h2>',
+      '#weight' => -999,
+    );
+    $form['name']['#weight'] = 9999;
+    $form['pass']['#weight'] = 9999;
+    $form['actions']['#weight'] = 9999;
+    $form['#submit']['#weight'] = 9999;
+    $form['orstatement'] = array(
+      '#markup' => '<hr/><h2>Login in with Drupal:</h2>',
+      '#weight' => 9998,
+    );
+  }
+}
