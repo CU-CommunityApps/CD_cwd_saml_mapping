@@ -8,14 +8,14 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Provides a listing of saml role mappings.
  */
-final class SamlRoleMappingListBuilder extends ConfigEntityListBuilder {
+final class SamlFieldMappingListBuilder extends ConfigEntityListBuilder {
 
   /**
    * {@inheritdoc}
    */
   public function buildHeader(): array {
     $header['label'] = $this->t('Label');
-    $header['id'] = $this->t('Machine name');
+    $header['field'] = $this->t('Drupal field');
     $header['status'] = $this->t('Status');
     return $header + parent::buildHeader();
   }
@@ -24,9 +24,9 @@ final class SamlRoleMappingListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity): array {
-    /** @var \Drupal\cwd_saml_mapping\SamlRoleMappingInterface $entity */
+    /** @var \Drupal\cwd_saml_mapping\SamlFieldMappingInterface $entity */
     $row['label'] = $entity->label();
-    $row['id'] = $entity->id();
+    $row['field'] = $entity->get('field');
     $row['status'] = $entity->status() ? $this->t('Enabled') : $this->t('Disabled');
     return $row + parent::buildRow($entity);
   }

@@ -7,6 +7,6 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 /**
  * Provides an interface defining a saml role mapping entity type.
  */
-interface SamlRoleMappingInterface extends ConfigEntityInterface {
+interface SamlFieldMappingInterface extends ConfigEntityInterface {
 
 }

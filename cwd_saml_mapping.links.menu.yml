@@ -8,3 +8,8 @@ entity.saml_role_mapping.overview:
   parent: cwd_saml_mapping.config_form
   description: 'List of saml role mappings to extend site functionality.'
   route_name: entity.saml_role_mapping.collection
+entity.saml_field_mapping.overview:
+  title: SAML Field Mappings
+  parent: cwd_saml_mapping.config_form
+  description: 'List of saml field mappings to extend site functionality.'
+  route_name: entity.saml_field_mapping.collection

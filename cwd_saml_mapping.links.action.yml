@@ -3,8 +3,18 @@ entity.saml_role_mapping.add_form:
   title: 'Add saml role mapping'
   appears_on:
     - entity.saml_role_mapping.collection
+entity.saml_field_mapping.add_form:
+  route_name: 'entity.saml_field_mapping.add_form'
+  title: 'Add saml field mapping'
+  appears_on:
+    - entity.saml_field_mapping.collection
 entity.saml_role_mapping.collection:
   route_name: 'entity.saml_role_mapping.collection'
   title: 'See role mappings'
+  appears_on:
+    - cwd_saml_mapping.config_form
+entity.saml_field_mapping.collection:
+  route_name: 'entity.saml_field_mapping.collection'
+  title: 'See field mappings'
   appears_on:
     - cwd_saml_mapping.config_form

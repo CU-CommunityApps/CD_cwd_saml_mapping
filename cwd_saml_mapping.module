@@ -13,7 +13,6 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   //Get all our saml_role_mapping configs for processing
   $entity_ids = \Drupal::entityQuery('saml_role_mapping')->condition('status', 1)->execute();
   $configs = \Drupal::entityTypeManager()->getStorage('saml_role_mapping')->loadMultiple($entity_ids);
-
   //Variables for storing data and signaling a user save is needed.
   $saveUser = false;
   $samlManagedRoles = [];
@@ -74,11 +73,44 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   // End of role logic
   //-------------------------------------------------------------------------------------
 
+  //-------------------------------------------------------------------------------------
+  // Use global config to set user name
+  //-------------------------------------------------------------------------------------
+  $global_cwd_saml_mapping_config = \Drupal::config('cwd_saml_mapping.config_form');
+  $username_saml_prop = $global_cwd_saml_mapping_config->getRawData()['username_saml_prop'];
+  $new_user_name = $attributes[$username_saml_prop][0];
+  if ($user->name != $new_user_name) {
+    $user->name = $attributes[$username_saml_prop];
+    $saveUser = true;
+  }
+  //-------------------------------------------------------------------------------------
+  // End of use global config to set user name
+  //-------------------------------------------------------------------------------------
+
+
 
   //-------------------------------------------------------------------------------------
   // Logic for mapping data SAML into user fields
   //-------------------------------------------------------------------------------------
-  // TBD - but similar to saml_role_mapping
+  $entity_ids = \Drupal::entityQuery('saml_field_mapping')->condition('status', 1)->execute();
+  $configs = \Drupal::entityTypeManager()->getStorage('saml_field_mapping')->loadMultiple($entity_ids);
+  foreach ($configs as $field_mapping_config) {
+    $current_field_value = $user->{$field_mapping_config->get('field')}->getValue()[0]['value'];
+    $new_field_data = $attributes[$field_mapping_config->get('samlprop')];
+    if (empty($new_field_data)) {
+      continue;
+    }
+    if (count($new_field_data) > 1) {
+      $new_field_value = implode(", ", $new_field_data);
+    }
+    else {
+      $new_field_value = $new_field_data[0];
+    }
+    if ($current_field_value != $new_field_value) {
+      $user->{$field_mapping_config->get('field')} = $new_field_value;
+      $saveUser = true;
+    }
+  }
   //-------------------------------------------------------------------------------------
   // End of mapping data SAML into user fields
   //-------------------------------------------------------------------------------------
@@ -140,7 +172,7 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
 function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   if ($form_id == 'user_login_form') {
     $form['new'] = array(
-      '#markup' => '<hr/><h2>Log in by SSO:</h2>',
+      '#markup' => '<hr/><h2>Login with SSO:</h2>',
       '#weight' => -999,
     );
     $form['name']['#weight'] = 9999;
@@ -148,7 +180,7 @@ function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterfac
     $form['actions']['#weight'] = 9999;
     $form['#submit']['#weight'] = 9999;
     $form['orstatement'] = array(
-      '#markup' => '<hr/><h2>Login in with Drupal:</h2>',
+      '#markup' => '<hr/><h2>Login with Drupal:</h2>',
       '#weight' => 9998,
     );
   }

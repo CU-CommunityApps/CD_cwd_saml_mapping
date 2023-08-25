@@ -39,3 +39,35 @@ cwd_saml_mapping.config_form:
     _permission: 'administer saml_role_mapping'
   options:
     _admin_route: TRUE
+
+entity.saml_field_mapping.collection:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-field-mapping'
+  defaults:
+    _entity_list: 'saml_field_mapping'
+    _title: 'SAML Role Mapping configuration'
+  requirements:
+    _permission: 'administer saml_field_mapping'
+
+entity.saml_field_mapping.add_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-field-mapping/add'
+  defaults:
+    _entity_form: 'saml_field_mapping.add'
+    _title: 'Add a saml field mapping'
+  requirements:
+    _permission: 'administer saml_field_mapping'
+
+entity.saml_field_mapping.edit_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-field-mapping/{saml_field_mapping}'
+  defaults:
+    _entity_form: 'saml_field_mapping.edit'
+    _title: 'Edit a saml field mapping'
+  requirements:
+    _permission: 'administer saml_field_mapping'
+
+entity.saml_field_mapping.delete_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-field-mapping/{saml_field_mapping}/delete'
+  defaults:
+    _entity_form: 'saml_field_mapping.delete'
+    _title: 'Delete a saml field mapping'
+  requirements:
+    _permission: 'administer saml_field_mapping'

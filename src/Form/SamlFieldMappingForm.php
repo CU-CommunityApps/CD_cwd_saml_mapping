@@ -5,12 +5,12 @@ namespace Drupal\cwd_saml_mapping\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\cwd_saml_mapping\ShibbolethHelper;
-use Drupal\cwd_saml_mapping\Entity\SamlRoleMapping;
+use Drupal\cwd_saml_mapping\Entity\SamlFieldMapping;
 
 /**
- * SAML Role Mapping form.
+ * SAML Field Mapping form.
  */
-final class SamlRoleMappingForm extends EntityForm {
+final class SamlFieldMappingForm extends EntityForm {
 
   /**
    * {@inheritdoc}
@@ -31,25 +31,16 @@ final class SamlRoleMappingForm extends EntityForm {
       '#type' => 'machine_name',
       '#default_value' => $this->entity->id(),
       '#machine_name' => [
-        'exists' => [SamlRoleMapping::class, 'load'],
+        'exists' => [SamlFieldMapping::class, 'load'],
       ],
       '#disabled' => !$this->entity->isNew(),
     ];
 
-
-    $site_roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
-    $role_options = [];
-    foreach ($site_roles as $roleid => $role) {
-      $role_options[$roleid] = $role->label();
-    }
-    $form['role'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Role to be assigned'),
-      '#options' => $role_options,
-      '#default_value' => $this->entity->get('role')
-    ];
-
     $saml_property_mapping = ShibbolethHelper::getMappingArray();
+    $form['orstatement'] = array(
+      '#markup' => '<h2>Instructions</h2><ul><li>Please Note: we can only map saml properties into text/textarea fields.</li><li>Multi-valued fields in Shibboleth will be concatenated into a single string in Drupal.</li></ul>',
+    );
+
     $form['samlprop'] = [
       '#type' => 'select',
       '#options' => $saml_property_mapping,
@@ -58,12 +49,13 @@ final class SamlRoleMappingForm extends EntityForm {
       '#default_value' => $this->entity->get('samlprop'),
     ];
 
-    $form['values'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Accepted Values'),
-      '#description' => $this->t('The values that will allow this role to be added. One per line'),
-      '#default_value' => $this->entity->get('values'),
+    $form['field'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('User Field'),
+      // '#description' => $this->t('The values that will allow this role to be added. One per line'),
+      '#default_value' => $this->entity->get('field'),
     ];
+
     $form['status'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enabled'),

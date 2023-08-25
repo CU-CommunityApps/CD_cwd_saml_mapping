@@ -1,0 +1,16 @@
+cwd_saml_mapping.saml_field_mapping.*:
+  type: config_entity
+  label: SAML Field Mapping
+  mapping:
+    id:
+      type: string
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: string
+    samlprop:
+      type: string
+    field:
+      type: string
