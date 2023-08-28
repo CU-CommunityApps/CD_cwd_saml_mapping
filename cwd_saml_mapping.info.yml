@@ -1,6 +1,6 @@
 name: 'cwd_saml_mapping'
 type: module
-description: 'Module to hook into saml_sp and update user information'
+description: 'Drupal Custom module to extend functionality of drupal/saml_sp. Allows for mapping of saml properties into user fields and for automatic role assignment.'
 package: Custom
 core_version_requirement: ^9 || ^10
 dependencies:

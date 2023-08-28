@@ -45,7 +45,7 @@ final class SamlFieldMappingForm extends EntityForm {
       '#type' => 'select',
       '#options' => $saml_property_mapping,
       '#title' => $this->t('SAML Property'),
-      '#description' => $this->t('The property from saml_sp that will be used to assign the role.'),
+      '#description' => $this->t('The property from shibboleth that will be used to fill in the selected field.'),
       '#default_value' => $this->entity->get('samlprop'),
     ];
 
@@ -73,8 +73,8 @@ final class SamlFieldMappingForm extends EntityForm {
     $message_args = ['%label' => $this->entity->label()];
     $this->messenger()->addStatus(
       match ($result) {
-        \SAVED_NEW => $this->t('Created new example %label.', $message_args),
-        \SAVED_UPDATED => $this->t('Updated example %label.', $message_args),
+        \SAVED_NEW => $this->t('Created new saml_field_mapping %label.', $message_args),
+        \SAVED_UPDATED => $this->t('Updated saml_field_mapping %label.', $message_args),
       }
     );
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));

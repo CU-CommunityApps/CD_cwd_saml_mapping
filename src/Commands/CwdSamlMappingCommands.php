@@ -8,7 +8,7 @@ use Drush\Commands\DrushCommands;
 /**
  * A Drush commandfile.
  */
-class SamlNameIDClean extends DrushCommands {
+class CwdSamlMappingCommands extends DrushCommands {
 
   /**
    * Command description here.
@@ -20,10 +20,10 @@ class SamlNameIDClean extends DrushCommands {
    *   - This will make sure all cornell.edu emails are netid emails and not alias emails.
    *   - This should ONLY be run on legacy sites that are converting from using simplesamlphp_auth
    *
-   * @command cwd_saml_nameid_clean
-   * @aliases cwd-saml-nameid
+   * @command cwd_saml_mapping:name-id-clean
+   * @aliases cwd-nidc
    */
-  public function commandName($options = ['dry-run' => false]) {
+  public function nameIdClean($options = ['dry-run' => false]) {
     $dryRun = $options['dry-run'];
     $userStorage = \Drupal::entityTypeManager()->getStorage('user');
     $query = $userStorage->getQuery();
@@ -38,9 +38,10 @@ class SamlNameIDClean extends DrushCommands {
           continue;
         }
         if (!str_contains($mail, $name)) {
-          if($dryRun) {
+          if ($dryRun) {
             echo "Change: " . $name . " email from '" . $mail . "' to '" . $name . "@cornell.edu'\n";
-          } else {
+          }
+          else {
             $user->mail = $name . "@cornell.edu";
             $user->save();
           }

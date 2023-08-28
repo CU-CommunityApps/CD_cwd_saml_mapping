@@ -1,6 +1,6 @@
 services:
   cwd_saml_mapping.commands:
-    class: \Drupal\cwd_saml_mapping\Commands\SamlNameIDClean
+    class: \Drupal\cwd_saml_mapping\Commands\CwdSamlMappingCommands
     tags:
       - { name: drush.command }
  

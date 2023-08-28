@@ -1,6 +1,6 @@
 {
     "name": "cubear/cwd_saml_mapping",
-    "description": "A Drupal 10 custom module Drupal Custom module to extend functionality of drupal/saml_sp. Allows for mapping of saml properties for auto role assignment",
+    "description": "Drupal Custom module to extend functionality of drupal/saml_sp. Allows for mapping of saml properties into user fields and for automatic role assignment.",
     "type": "drupal-custom-module",
     "license": "GPL-3.0-or-later",
     "homepage": "https://it.cornell.edu/custom-web",
