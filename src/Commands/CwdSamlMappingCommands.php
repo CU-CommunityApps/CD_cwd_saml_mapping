@@ -11,12 +11,12 @@ use Drush\Commands\DrushCommands;
 class CwdSamlMappingCommands extends DrushCommands {
 
   /**
-   * Command description here.
+   * Command to clean up emails in Drupal accounts to match incoming NameID field from shibboleth.
    *
    * @param array $options
    * @options array $options has the dry run flag
-   * @usage cwd_similar_names
-   *   - Run command cleanup NameID, used by saml_sp to look up users, from SAML.
+   * @usage cwd_saml_mapping:name-id-clean
+   *   - Run command nameIdClean to cleanup NameID, used by saml_sp to look up users, from SAML.
    *   - This will make sure all cornell.edu emails are netid emails and not alias emails.
    *   - This should ONLY be run on legacy sites that are converting from using simplesamlphp_auth
    *
