@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\cwd_saml_mapping\ShibbolethHelper;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
@@ -17,6 +18,8 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   $saveUser = false;
   $samlManagedRoles = [];
   $userRolesToAdd = [];
+  $saml_property_mappings = ShibbolethHelper::getMappingArray();
+
 
   foreach ($configs as $role_assigment_config) {
     //Create a list of all roles managed by saml properties
@@ -31,8 +34,9 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
     //Drupal's accepted values we configure on our end
     $values = explode("\r\n", $role_assigment_config->get('values'));
 
-    //This condition should catch a miss-configuarion of a saml mapping
+    //This condition should catch a misconfiguration of a saml mapping
     if (array_key_exists($samlprop, $attributes) && is_null($attributes[$samlprop])) {
+      \Drupal::logger('cwd_saml_mapping')->warning("Shibboleth data not found for " . $saml_property_mappings[$samlprop] . " need to check the saml_role_mapping configuration for " . $role_assigment_config->get('id'));
       continue;
     }
 
