@@ -141,13 +141,14 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
 
   //Look at our global moduel config to see if we use prod saml in production Pantheon
   $config = \Drupal::config('cwd_saml_mapping.config_form');
+  $show_all_idps = $config->getRawData()['show_all_idps'];
   $use_saml_in_prod = $config->getRawData()['use_prod_in_saml'];
   if (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $use_saml_in_prod) {
     //Loop through links and remove ones that contain 'test'
     foreach ($variables['items'] as $index => $link) {
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
       $idp_class = strtolower(preg_replace("/\s*/", "_", $idp_name));
-      if ($idp_name && str_contains("test", strtolower(($idp_name)))) {
+      if ($idp_name && str_contains("test", strtolower(($idp_name))) && !$show_all_idps) {
         unset($variables['items'][$index]);
       }
       else {
@@ -161,7 +162,7 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
     foreach ($variables['items'] as $index => $link) {
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
       $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
-      if ($idp_name && str_contains(strtolower(($idp_name)), "prod")) {
+      if ($idp_name && str_contains(strtolower(($idp_name)), "prod") && !$show_all_idps) {
         unset($variables['items'][$index]);
       }
       else {

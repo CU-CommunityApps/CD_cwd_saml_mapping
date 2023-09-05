@@ -46,7 +46,11 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
       '#title' => $this->t('Use Production Shibboleth on the Live/Production site.'),
       '#default_value' => $config->get('use_prod_in_saml'),
     ];
-
+    $form['show_all_idps'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show All IDPs to that can be used.'),
+      '#default_value' => $config->get('show_all_idps'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -65,6 +69,7 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
 
     $this->config('cwd_saml_mapping.config_form')
       ->set('use_prod_in_saml', $form_state->getValue('use_prod_in_saml'))
+      ->set('show_all_idps', $form_state->getValue('show_all_idps'))
       ->set('username_saml_prop', $form_state->getValue('username_saml_prop'))
       ->save();
   }
