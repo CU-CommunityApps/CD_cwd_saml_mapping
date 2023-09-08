@@ -20,7 +20,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   $userRolesToAdd = [];
   $saml_property_mappings = ShibbolethHelper::getMappingArray();
 
-
+  $missing_property_messages = [];
   foreach ($configs as $role_assigment_config) {
     //Create a list of all roles managed by saml properties
     $role = $role_assigment_config->get('role');
@@ -34,8 +34,15 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
     //Drupal's accepted values we configure on our end
     $values = explode("\r\n", $role_assigment_config->get('values'));
 
-    //This condition should catch a misconfiguration of a saml mapping
-    if (array_key_exists($samlprop, $attributes) && is_null($attributes[$samlprop])) {
+    
+    //Catch condition the proptery is not release to us from shibboleth (ex. Test Shibboleth does no release groups property)
+    if (!array_key_exists($samlprop, $attributes)) {
+      $missing_property_messages[] =  $saml_property_mappings[$samlprop] . " => " . $role_assigment_config->get('id');
+      continue;
+    }
+
+     //Catch condition that the property is released but has no data
+    if (is_null($attributes[$samlprop])) {
       \Drupal::logger('cwd_saml_mapping')->warning("Shibboleth data not found for " . $saml_property_mappings[$samlprop] . " need to check the saml_role_mapping configuration for " . $role_assigment_config->get('id'));
       continue;
     }
@@ -56,6 +63,12 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
       $userRolesToAdd[] = $role;
     }
   } // end of for loop processing saml_role_mapping configs
+  
+  //Log message about configurations with missing properties
+  if(count($missing_property_messages) > 0) {
+    $message = "Proptery not found in Shibboleth data found for [" . implode("] , [", $missing_property_messages) . "]";
+    \Drupal::logger('cwd_saml_mapping')->info($message);
+  }
 
   //Take and add roles to user as needed
   foreach ($userRolesToAdd as $roleToAdd) {
