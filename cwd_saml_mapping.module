@@ -173,7 +173,7 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
     foreach ($variables['items'] as $index => $link) { 
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
       $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
-      if ($idp_name && str_contains("test", strtolower(($idp_name))) && !$show_all_idps) {
+      if ($idp_name && str_contains(strtolower(($idp_name)), "test") && !$show_all_idps) {
         unset($variables['items'][$index]);
       }
       else {
