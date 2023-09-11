@@ -51,6 +51,29 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
       '#title' => $this->t('Show All IDPs to that can be used.'),
       '#default_value' => $config->get('show_all_idps'),
     ];
+
+    $form['hide_drupal_login'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Hide Drupal Login in all envs.'),
+      '#default_value' => $config->get('hide_drupal_login'),
+    ];
+
+    $form['hide_drupal_login_prod'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Hide Drupal Login in Prod.'),
+      '#default_value' => $config->get('hide_drupal_login_prod'),
+    ];
+
+    $form['sso_text'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Text for Single Sign On login message.'),
+      '#default_value' => $config->get('sso_text'),
+    ];
+    $form['drupal_login_text'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Text for Drupal login message.'),
+      '#default_value' => $config->get('drupal_login_text'),
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -66,11 +89,13 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     parent::submitForm($form, $form_state);
-
-    $this->config('cwd_saml_mapping.config_form')
-      ->set('use_prod_in_saml', $form_state->getValue('use_prod_in_saml'))
-      ->set('show_all_idps', $form_state->getValue('show_all_idps'))
-      ->set('username_saml_prop', $form_state->getValue('username_saml_prop'))
-      ->save();
+    $ignore = ["submit", "form_build_id", "form_token", "form_id", "op"];
+    $config = $this->config('cwd_saml_mapping.config_form');
+    foreach($form_state->getValues() as $key => $value) {
+      if(!in_array($key,$ignore)) {
+        $config->set($key,$value);
+      }
+    }
+    $config->save();
   }
 }

@@ -158,14 +158,15 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
   $use_saml_in_prod = $config->getRawData()['use_prod_in_saml'];
   if (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $use_saml_in_prod) {
     //Loop through links and remove ones that contain 'test'
-    foreach ($variables['items'] as $index => $link) {
+    foreach ($variables['items'] as $index => $link) { 
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
-      $idp_class = strtolower(preg_replace("/\s*/", "_", $idp_name));
+      $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
       if ($idp_name && str_contains("test", strtolower(($idp_name))) && !$show_all_idps) {
         unset($variables['items'][$index]);
       }
       else {
-        $link['value']->setText(new TranslatableMarkup($idp_name . " Login"));
+        $friendly_name = str_replace(" Prod", "", $idp_name);
+        $link['value']->setText(new TranslatableMarkup($friendly_name . " Login"));
         $link['attributes']->addClass(['login-link-button', $idp_class]);
       }
     }
@@ -179,27 +180,55 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
         unset($variables['items'][$index]);
       }
       else {
-        $link['value']->setText(new TranslatableMarkup($idp_name . " Login"));
+        $friendly_name = str_replace(" Test","",$idp_name);
+        $link['value']->setText(new TranslatableMarkup($friendly_name . " Login"));
         $link['attributes']->addClass(['login-link-button', $idp_class]);
       }
     }
   }
 }
 
-// Remove local login form?
 function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   if ($form_id == 'user_login_form') {
+    $config = \Drupal::config('cwd_saml_mapping.config_form');
+
+    $hide_drupal_login_prod = $config->getRawData()['hide_drupal_login_prod'] ?? false;
+    $is_prod_and_hide = (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $hide_drupal_login_prod);
+    $hide_drupal_login = $config->getRawData()['hide_drupal_login'] ?? false;
+
+    $sso_text = $config->getRawData()['sso_text'] ?? "Login with your NetID";
     $form['new'] = array(
-      '#markup' => '<hr/><h2>Login with SSO:</h2>',
+      '#markup' => '<hr/><h2>' . $sso_text . ':</h2>',
       '#weight' => -999,
     );
+
+    if($hide_drupal_login || $is_prod_and_hide) {
+      unset($form['name']);
+      unset($form['pass']);
+      unset($form['actions']);
+      unset($form['#submit']);
+      return;
+    }
+
+    $drupal_login_text = $config->getRawData()['drupal_login_text'] ?? "Login with Drupal";
     $form['name']['#weight'] = 9999;
     $form['pass']['#weight'] = 9999;
     $form['actions']['#weight'] = 9999;
     $form['#submit']['#weight'] = 9999;
     $form['orstatement'] = array(
-      '#markup' => '<hr/><h2>Login with Drupal:</h2>',
+      '#markup' => '<hr/><h2>'.$drupal_login_text.':</h2>',
       '#weight' => 9998,
     );
   }
+}
+
+function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
+  $config = \Drupal::config('cwd_saml_mapping.config_form');
+  $hide_drupal_login_prod = $config->getRawData()['hide_drupal_login_prod'] ?? false;
+  $is_prod_and_hide = (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $hide_drupal_login_prod);
+  $hide_drupal_login = $config->getRawData()['hide_drupal_login'] ?? false;
+   if($hide_drupal_login || $is_prod_and_hide) {
+    unset($local_tasks['user.register']);
+    unset($local_tasks['user.login']);
+   }
 }
