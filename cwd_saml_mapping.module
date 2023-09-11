@@ -155,8 +155,20 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
   //Look at our global moduel config to see if we use prod saml in production Pantheon
   $config = \Drupal::config('cwd_saml_mapping.config_form');
   $show_all_idps = $config->getRawData()['show_all_idps'];
+
+  if($show_all_idps) {
+    foreach ($variables['items'] as $index => $link) {
+      $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
+      $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
+      $link['value']->setText(new TranslatableMarkup($idp_name . " Login"));
+      $link['attributes']->addClass(['login-link-button', $idp_class]);
+    }
+    return;
+  }
+
   $use_saml_in_prod = $config->getRawData()['use_prod_in_saml'];
-  if (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $use_saml_in_prod) {
+  $is_prod_and_use_prod_shibboleth = (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $use_saml_in_prod);
+  if ($is_prod_and_use_prod_shibboleth) {
     //Loop through links and remove ones that contain 'test'
     foreach ($variables['items'] as $index => $link) { 
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
@@ -180,8 +192,7 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
         unset($variables['items'][$index]);
       }
       else {
-        $friendly_name = str_replace(" Test","",$idp_name);
-        $link['value']->setText(new TranslatableMarkup($friendly_name . " Login"));
+        $link['value']->setText(new TranslatableMarkup($idp_name . " Login"));
         $link['attributes']->addClass(['login-link-button', $idp_class]);
       }
     }
