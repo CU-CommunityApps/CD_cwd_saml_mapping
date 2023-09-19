@@ -19,8 +19,8 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   $samlManagedRoles = [];
   $userRolesToAdd = [];
   $saml_property_mappings = ShibbolethHelper::getMappingArray();
-
   $missing_property_messages = [];
+  $rolesUnableToEvaluateForRemoval = [];
   foreach ($configs as $role_assigment_config) {
     //Create a list of all roles managed by saml properties
     $role = $role_assigment_config->get('role');
@@ -38,12 +38,14 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
     //Catch condition the proptery is not release to us from shibboleth (ex. Test Shibboleth does no release groups property)
     if (!array_key_exists($samlprop, $attributes)) {
       $missing_property_messages[] =  $saml_property_mappings[$samlprop] . " => " . $role_assigment_config->get('id');
+      $rolesUnableToEvaluateForRemoval[] = $role;
       continue;
     }
 
      //Catch condition that the property is released but has no data
     if (is_null($attributes[$samlprop])) {
       \Drupal::logger('cwd_saml_mapping')->warning("Shibboleth data not found for " . $saml_property_mappings[$samlprop] . " need to check the saml_role_mapping configuration for " . $role_assigment_config->get('id'));
+      $rolesUnableToEvaluateForRemoval[] = $role;
       continue;
     }
 
@@ -80,12 +82,16 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
 
   //Compute roles we need to take away and remove if needed
   $userRolesToRemove = array_diff($samlManagedRoles, $userRolesToAdd);
+  //Don't remove roles we don't have all the properties from shibboleth to evaluate
+  $userRolesToRemove = array_diff($userRolesToRemove,$rolesUnableToEvaluateForRemoval);
   foreach ($userRolesToRemove as $roleToRemove) {
     if ($user->hasRole($roleToRemove)) {
       $user->removeRole($roleToRemove);
       $saveUser = true;
     }
   }
+
+
   //-------------------------------------------------------------------------------------
   // End of role logic
   //-------------------------------------------------------------------------------------
