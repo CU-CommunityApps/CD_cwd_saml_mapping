@@ -41,39 +41,78 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
       '#description' => $this->t('The property from saml_sp that will be used as the Username.'),
       '#default_value' => $config->get('username_saml_prop'),
     ];
-    $form['use_prod_in_saml'] = [
+    $form['customize_links'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Customize the login links and form'),
+      '#open' => TRUE,
+    ];
+    $form['customize_links']['use_prod_in_saml'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Use Production Shibboleth on the Live/Production site.'),
       '#default_value' => $config->get('use_prod_in_saml'),
     ];
-    $form['show_all_idps'] = [
+    $form['customize_links']['show_all_idps'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Show All IDPs to that can be used.'),
       '#default_value' => $config->get('show_all_idps'),
     ];
-
-    $form['hide_drupal_login'] = [
+    $form['customize_links']['hide_drupal_login'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Hide Drupal Login in all envs.'),
       '#default_value' => $config->get('hide_drupal_login'),
     ];
-
-    $form['hide_drupal_login_prod'] = [
+    $form['customize_links']['hide_drupal_login_prod'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Hide Drupal Login in Prod.'),
       '#default_value' => $config->get('hide_drupal_login_prod'),
     ];
-
-    $form['sso_text'] = [
+    $form['customize_headings'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Customize the login page heading'),
+      '#open' => TRUE,
+    ];
+    $form['customize_headings']['sso_text'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Text for Single Sign On login message.'),
       '#default_value' => $config->get('sso_text'),
     ];
-    $form['drupal_login_text'] = [
+    $form['customize_headings']['drupal_login_text'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Text for Drupal login message.'),
       '#default_value' => $config->get('drupal_login_text'),
     ];
+    $form['customize_403'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Customize the 403 pages'),
+      '#open' => TRUE,
+    ];
+    $form['customize_403']['description'] = array(
+      '#markup' => '<p><strong>Note:</strong> that you need to set the site 403 to /accessdenied for this config to work</p>',
+    );
+    $form['customize_403']['403_custom_text'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Text for 403 page'),
+      '#description' => $this->t('HTML is permitted; shown under page title ("Access denied"). Default: "Restricted access - please login to continue."'),
+      '#default_value' => $config->get('403_custom_text'),
+      '#size' => 200,
+      '#maxlength' => 2000,
+      '#required' => false,
+    ];
+    $form['customize_403']['403_custom_logged_in_text'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Text for 403 page when someone is logged in'),
+      '#description' => $this->t('HTML is permitted; shown under page title ("Access denied"). Default: "Restricted access - please login to continue."'),
+      '#default_value' => $config->get('403_custom_logged_in_text'),
+      '#size' => 200,
+      '#maxlength' => 2000,
+      '#required' => false,
+    ];
+    $form['customize_403']['local_login_text'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Text for 403 local login button.'),
+      '#default_value' => $config->get('local_login_text'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 

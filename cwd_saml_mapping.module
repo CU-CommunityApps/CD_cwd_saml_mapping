@@ -154,7 +154,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
 function cwd_saml_mapping_preprocess_item_list(&$variables) {
   //If we are not on the user login page abandon this hook.
   $current_route_name = \Drupal::service('current_route_match')->getRouteName();
-  if ($current_route_name != "user.login") {
+  if ($current_route_name != "user.login" && $current_route_name != "cwd_saml_mapping.accessdenied") {
     return;
   }
 
