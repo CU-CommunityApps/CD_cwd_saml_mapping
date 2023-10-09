@@ -1,3 +1,5 @@
+[![Latest Stable Version](https://poser.pugx.org/cubear/cwd_saml_mapping/v/stable)](https://packagist.org/packages/cubear/cwd_saml_mapping)
+
 ## INTRODUCTION
 
 The cwd_saml_mapping module is a module that used with drupal/saml_sp allows for the following
