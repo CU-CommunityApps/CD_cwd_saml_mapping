@@ -27,6 +27,8 @@ class ShibbolethHelper {
     $mapping_array = [
       "urn:oid:0.9.2342.19200300.100.1.1" => "uid",
       "urn:oid:0.9.2342.19200300.100.1.3" => "mail",
+      "urn:oid:2.16.840.1.113730.3.1.241" => "displayName",
+      "urn:oid:1.3.6.1.4.1.5923.1.1.1.6" => "eduPersonPrincipalName",
     ];
     return $mapping_array;
   }
