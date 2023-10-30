@@ -231,7 +231,6 @@ function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterfac
     $form['name']['#weight'] = 9999;
     $form['pass']['#weight'] = 9999;
     $form['actions']['#weight'] = 9999;
-    $form['#submit']['#weight'] = 9999;
     $form['orstatement'] = array(
       '#markup' => '<hr/><h2>'.$drupal_login_text.':</h2>',
       '#weight' => 9998,
