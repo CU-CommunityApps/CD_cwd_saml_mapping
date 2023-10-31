@@ -53,7 +53,7 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
     ];
     $form['customize_links']['show_all_idps'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Show All IDPs to that can be used.'),
+      '#title' => $this->t('Show All IDPs that can be used.'),
       '#default_value' => $config->get('show_all_idps'),
     ];
     $form['customize_links']['hide_drupal_login'] = [

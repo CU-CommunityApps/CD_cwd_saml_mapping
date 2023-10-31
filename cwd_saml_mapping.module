@@ -35,7 +35,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
     $values = explode("\r\n", $role_assigment_config->get('values'));
 
     
-    //Catch condition the proptery is not release to us from shibboleth (ex. Test Shibboleth does no release groups property)
+    //Catch condition the property is not release to us from shibboleth (ex. Test Shibboleth does no release groups property)
     if (!array_key_exists($samlprop, $attributes)) {
       $missing_property_messages[] =  $saml_property_mappings[$samlprop] . " => " . $role_assigment_config->get('id');
       $rolesUnableToEvaluateForRemoval[] = $role;
@@ -68,7 +68,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   
   //Log message about configurations with missing properties
   if(count($missing_property_messages) > 0) {
-    $message = "Proptery not found in Shibboleth data found for [" . implode("] , [", $missing_property_messages) . "]";
+    $message = "Property not found in Shibboleth data found for [" . implode("] , [", $missing_property_messages) . "]";
     \Drupal::logger('cwd_saml_mapping')->info($message);
   }
 
@@ -176,7 +176,13 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
   $is_prod_and_use_prod_shibboleth = (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $use_saml_in_prod);
   if ($is_prod_and_use_prod_shibboleth) {
     //Loop through links and remove ones that contain 'test'
-    foreach ($variables['items'] as $index => $link) { 
+    foreach ($variables['items'] as $index => $link) {
+      if (gettype($link['value']) != "object") {
+        continue;
+      }
+      elseif (get_class($link['value']) != "Drupal\Core\Link") {
+        continue;
+      }
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
       $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
       if ($idp_name && str_contains(strtolower(($idp_name)), "test") && !$show_all_idps) {
@@ -192,6 +198,12 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
   else {
     //Loop through links and remove ones that contain 'prod'
     foreach ($variables['items'] as $index => $link) {
+      if (gettype($link['value']) != "object") {
+        continue;
+      }
+      elseif (get_class($link['value']) != "Drupal\Core\Link") {
+        continue;
+      }
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
       $idp_class = strtolower(preg_replace("/\s+/", "_", $idp_name));
       if ($idp_name && str_contains(strtolower(($idp_name)), "prod") && !$show_all_idps) {
