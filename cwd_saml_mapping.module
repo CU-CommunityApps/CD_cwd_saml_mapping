@@ -177,7 +177,7 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
   if ($is_prod_and_use_prod_shibboleth) {
     //Loop through links and remove ones that contain 'test'
     foreach ($variables['items'] as $index => $link) {
-      if (gettype($link['value']) != "object" && get_class($link['value']) != "Drupal\Core\Link") {
+      if (gettype($link['value']) != "object") {
         continue;
       }
       elseif (get_class($link['value']) != "Drupal\Core\Link") {
