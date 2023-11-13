@@ -76,6 +76,6 @@ cwd_saml_mapping.accessdenied:
   path: '/accessdenied'
   defaults:
     _controller: '\Drupal\cwd_saml_mapping\Controller\Cwd403Controller::content'
-    _title: 'Restricted access - please login to continue.'
+    _title: 'Restricted access - please login to continue'
   requirements:
     _permission: 'access content'
