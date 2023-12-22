@@ -73,21 +73,21 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
     ];
     $form['customize_headings']['sso_text'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Text for Single Sign On login message.'),
+      '#title' => $this->t('Text for Single Sign On login message'),
       '#default_value' => $config->get('sso_text'),
     ];
     $form['customize_headings']['drupal_login_text'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Text for Drupal login message.'),
+      '#title' => $this->t('Text for Drupal login message'),
       '#default_value' => $config->get('drupal_login_text'),
     ];
     $form['customize_403'] = [
       '#type' => 'details',
-      '#title' => $this->t('Customize the 403 pages'),
+      '#title' => $this->t('Customize the 403 page'),
       '#open' => TRUE,
     ];
     $form['customize_403']['description'] = array(
-      '#markup' => '<p><strong>Note:</strong> that you need to set the site 403 to /accessdenied for this config to work</p>',
+      '#markup' => '<p><strong>Note:</strong> For this config to take effect, set the site 403 to /accessdenied (System > Basic site settings).</p>',
     );
     $form['customize_403']['403_custom_text'] = [
       '#type' => 'textarea',
@@ -109,7 +109,7 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
     ];
     $form['customize_403']['local_login_text'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Text for 403 local login button.'),
+      '#title' => $this->t('Text for 403 local login button'),
       '#default_value' => $config->get('local_login_text'),
     ];
 
