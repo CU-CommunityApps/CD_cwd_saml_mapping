@@ -247,6 +247,7 @@ function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterfac
       '#markup' => '<hr/><h2>'.$drupal_login_text.':</h2>',
       '#weight' => 9998,
     );
+    unset($form['name']['#attributes']['autofocus']);
   }
 }
 

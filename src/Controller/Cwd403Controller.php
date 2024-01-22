@@ -34,8 +34,8 @@ class Cwd403Controller {
       $is_prod_and_hide = (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live' && $hide_drupal_login_prod);
       $hide_drupal_login = $config->getRawData()['hide_drupal_login'] ?? false;
       if (!$hide_drupal_login && !$is_prod_and_hide) {
-        $header_text = $config->getRawData()['drupal_login_text'] ?? "Login with Drupal";
-        $login_button_text = $config->getRawData()['local_login_text'] ?? "Drupal Login";
+        $header_text = $config->getRawData()['drupal_login_text'] ? $config->getRawData()['drupal_login_text'] : "Login into Drupal";
+        $login_button_text = $config->getRawData()['local_login_text'] ? $config->getRawData()['local_login_text'] : "Log in";
         $markup .= '<hr/><h2>' . $header_text . ':</h2>';
         $current_path = \Drupal::request()->getRequestUri();
         $markup .= '<p><a class="link-button" href="/user/login?destination=' . $current_path . '">'.$login_button_text.'</a></p>';
@@ -45,8 +45,11 @@ class Cwd403Controller {
       return $markup;
     }
     else {
-      $markup = $config->getRawData()['403_custom_logged_in_text'] ?? '<p>You don\'t have access to this page.</p>';
-      return $markup;
+      if($config->getRawData()['403_custom_logged_in_text']) {
+        return $config->getRawData()['403_custom_logged_in_text'];
+      } else {
+        return '<p>You don\'t have access to this page.</p>';
+      }
     }
   }
 }
