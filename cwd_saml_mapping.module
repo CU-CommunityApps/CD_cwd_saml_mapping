@@ -164,11 +164,8 @@ function cwd_saml_mapping_preprocess_item_list(&$variables) {
   $show_all_idps = $config->getRawData()['show_all_idps'];
   $sso_text = $config->getRawData()['sso_text'] ?? "Login with your NetID";
 
-  // dd($variables,$variables['items'],$variables['wrapper_attributes']);
   $variables["title"] = $sso_text;
 
-  // $variables['wrapper_attributes'] = new Attribute($attributes);
-// dd($variables);
   if($show_all_idps) {
     foreach ($variables['items'] as $index => $link) {
       $idp_name = $link['value']->getText()->getArguments()['%idp'] ?? null;
