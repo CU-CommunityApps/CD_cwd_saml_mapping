@@ -249,11 +249,9 @@ function cwd_saml_mapping_form_alter(&$form, \Drupal\Core\Form\FormStateInterfac
     $form['drupal_login']['name'] = $form['name'];
     $form['drupal_login']['pass'] = $form['pass'];
     $form['drupal_login']['actions'] = $form['actions'];
-    $form['drupal_login']['#submit'] = $form['#submit'];
     unset($form['name']);
     unset($form['pass']);
     unset($form['actions']);
-    unset($form['#submit']);
     unset($form['name']['#attributes']['autofocus']);
   }
 }
@@ -272,8 +270,7 @@ function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
 
 function cwd_saml_mapping_theme_suggestions_item_list_alter(array &$suggestions, array $variables)
 {
-  if(str_contains($variables['attributes']['data-drupal-selector'],'saml-sp')) {
-
+  if(array_key_exists('data-drupal-selector',$variables['attributes']) && str_contains($variables['attributes']['data-drupal-selector'],'saml-sp')) {
     array_splice($suggestions, 1, 0, 'item_list__saml_sp');
   }
 }
