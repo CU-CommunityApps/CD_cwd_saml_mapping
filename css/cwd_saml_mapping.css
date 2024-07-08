@@ -1,0 +1,7 @@
+div.form-item--samlother.hide {
+    display: none;
+}
+
+div.form-item--samlother.show {
+    display: unset;
+}
