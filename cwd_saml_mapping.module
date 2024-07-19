@@ -2,14 +2,8 @@
 
 use Drupal\cwd_saml_mapping\ShibbolethHelper;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-// ====================================================================
-// TODO: work on setting up forced authentication for all pages. WFJ24
-// ====================================================================
-use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-// ====================================================================
-// TODO: END. WFJ24
-// ====================================================================
+
 
 /**
  * @file
@@ -312,9 +306,6 @@ function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
    }
 }
 
-// ====================================================================
-// TODO: work on setting up forced authentication for all pages. WFJ24
-// ====================================================================
 function cwd_saml_mapping_preprocess_page(&$variables) {
   $config = \Drupal::config('cwd_saml_mapping.config_form');
   $restrict_all_pages = $config->getRawData()['restrict_all_pages'] ?? false;
@@ -326,9 +317,6 @@ function cwd_saml_mapping_preprocess_page(&$variables) {
 
     $restriction_choice = $config->getRawData()['restrict_pages_url'];
     switch($restriction_choice) {
-      case "403":
-        $url_string = "/accessdenied";
-        break;
       case "direct":
         $url_string = "/saml/drupal_login";
         $samlsp_login_config = \Drupal::config('saml_sp_drupal_login.config');
@@ -357,6 +345,3 @@ function cwd_saml_mapping_preprocess_page(&$variables) {
     }
   }
 }
-// ====================================================================
-// TODO: END. WFJ24
-// ====================================================================

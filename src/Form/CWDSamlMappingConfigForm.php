@@ -113,9 +113,6 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('local_login_text'),
     ];
 
-    // ====================================================================
-    // TODO: work on setting up forced authentication for all pages. WFJ24
-    // ====================================================================
     $form['access_overrides'] = [
       '#type' => 'details',
       '#title' => $this->t('Restrict Access to this site'),
@@ -133,16 +130,12 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
       '#type' => 'select',
       '#options' => [
         "none" => "None",
-        "403" => "403 Page",
         "login" => "Login Page",
         "direct" => "Direct to SSO",
       ],
       '#title' => $this->t('When restricting pages what page should the user be sent to?'),
       '#default_value' => $config->get('restrict_pages_url') ?? "none",
     ];
-    // ====================================================================
-    // TODO: END. WFJ24
-    // ====================================================================
 
     return parent::buildForm($form, $form_state);
   }
