@@ -116,19 +116,30 @@ class CWDSamlMappingConfigForm extends ConfigFormBase {
     // ====================================================================
     // TODO: work on setting up forced authentication for all pages. WFJ24
     // ====================================================================
-    // $form['access_overrides'] = [
-    //   '#type' => 'details',
-    //   '#title' => $this->t('Restrict Access to this site'),
-    //   '#open' => TRUE,
-    // ];
-    // $form['access_overrides']['description'] = array(
-    //   '#markup' => '<p><strong>Note:</strong> this section will alter the site and force a user to a 403 page if not authenticated).</p>',
-    // );
-    // $form['access_overrides']['restrict_all_pages'] = [
-    //   '#type' => 'checkbox',
-    //   '#title' => $this->t('By checking this box all pages on this site will be put behind authentication'),
-    //   '#default_value' => $config->get('restrict_all_pages'),
-    // ];
+    $form['access_overrides'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Restrict Access to this site'),
+      '#open' => TRUE,
+    ];
+    $form['access_overrides']['description'] = array(
+      '#markup' => '<p><strong>Note:</strong> this section will alter the site and force a user to a 403 page if not authenticated).</p>',
+    );
+    $form['access_overrides']['restrict_all_pages'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('By checking this box all pages on this site will be put behind authentication'),
+      '#default_value' => $config->get('restrict_all_pages'),
+    ];
+    $form['access_overrides']['restrict_pages_url'] = [
+      '#type' => 'select',
+      '#options' => [
+        "none" => "None",
+        "403" => "403 Page",
+        "login" => "Login Page",
+        "direct" => "Direct to SSO",
+      ],
+      '#title' => $this->t('When restricting pages what page should the user be sent to?'),
+      '#default_value' => $config->get('restrict_pages_url') ?? "none",
+    ];
     // ====================================================================
     // TODO: END. WFJ24
     // ====================================================================
