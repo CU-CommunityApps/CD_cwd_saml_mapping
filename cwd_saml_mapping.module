@@ -1,7 +1,10 @@
 <?php
 
+use Drupal;
+use Drupal\user\UserInterface;
 use Drupal\cwd_saml_mapping\ShibbolethHelper;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * @file
@@ -261,4 +264,38 @@ function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
     unset($local_tasks['user.register']);
     unset($local_tasks['user.login']);
    }
+}
+
+function cwd_saml_mapping_user_login(UserInterface $account) { 
+  $entity_ids = \Drupal::entityQuery('saml_login_redirect')->condition('status', 1)->execute();
+  $configs = \Drupal::entityTypeManager()->getStorage('saml_login_redirect')->loadMultiple($entity_ids);
+  if (empty($configs)) {
+    return;
+  }
+
+  $roles = $account->getRoles();
+  foreach ($configs as $config) {
+    $config_roles = explode(',', $config->get('roles'));
+
+    // if roles and config_roles have any common element then redirect
+    if (count(array_intersect($roles, $config_roles)) > 0) {
+      // get config value of redirect
+      $redirect = $config->get('redirect');
+      $redirect_compenents = array_filter(explode('/', $redirect));
+      if (in_array('{uid}', $redirect_compenents)) {
+        $redirect = str_replace('{uid}', $account->id(), $redirect);
+      }
+      if (in_array('{username}', $redirect_compenents)) {
+        $redirect = str_replace('{username}', $account->getUsername(), $redirect);
+      }
+      if (in_array('{email}', $redirect_compenents)) {
+        $redirect = str_replace('{email}', $account->getEmail(), $redirect);
+      }
+      \Drupal::service('request_stack')->getCurrentRequest()->query->set('destination', $redirect);
+      return;
+    }
+  
+  }
+
+
 }
