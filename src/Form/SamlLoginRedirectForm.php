@@ -43,6 +43,7 @@ final class SamlLoginRedirectForm extends EntityForm {
       '#default_value' => $this->entity->status(),
     ];
 
+
     $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
     $form['roles_selection'] = [
       '#type' => 'checkboxes',
@@ -65,6 +66,11 @@ final class SamlLoginRedirectForm extends EntityForm {
       '#default_value' => $this->entity->get('redirect'),
       '#required' => TRUE,
     ];
+    $form['weight'] = [
+      '#type' => 'weight',
+      '#title' => $this->t('Weight'),
+      '#default_value' => $this->entity->get('weight'),
+    ];
 
     return $form;
   }
@@ -75,6 +81,7 @@ final class SamlLoginRedirectForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state): int {
     $roles_string = implode(',', array_filter($form_state->getValues()['roles_selection']));
     $this->entity->set('roles', $roles_string);
+    $this->entity->set('weight', (int)$form_state->getValue('weight'));
     $result = parent::save($form, $form_state);
     $message_args = ['%label' => $this->entity->label()];
     $this->messenger()->addStatus(

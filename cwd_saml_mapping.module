@@ -266,12 +266,16 @@ function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
    }
 }
 
-function cwd_saml_mapping_user_login(UserInterface $account) { 
+function cwd_saml_mapping_user_login(UserInterface $account) {
   $entity_ids = \Drupal::entityQuery('saml_login_redirect')->condition('status', 1)->execute();
-  $configs = \Drupal::entityTypeManager()->getStorage('saml_login_redirect')->loadMultiple($entity_ids);
-  if (empty($configs)) {
+  if($entity_ids == null) {
     return;
   }
+
+  $configs = \Drupal::entityTypeManager()->getStorage('saml_login_redirect')->loadMultiple($entity_ids);
+  usort($configs, function ($a, $b) {
+    return $a->get('weight') <=> $b->get('weight');
+  });
 
   $roles = $account->getRoles();
   foreach ($configs as $config) {

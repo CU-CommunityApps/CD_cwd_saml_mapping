@@ -14,3 +14,5 @@ cwd_saml_mapping.saml_login_redirect.*:
       type: string
     redirect:
       type: string
+    weight:
+      type: integer

@@ -21,7 +21,7 @@ use Drupal\cwd_saml_mapping\SamlLoginRedirectInterface;
  *     plural = "@count saml login redirects",
  *   ),
  *   handlers = {
- *     "list_builder" = "Drupal\cwd_saml_mapping\SamlLoginRedirectListBuilder",
+ *     "list_builder" = "Drupal\cwd_saml_mapping\SamlLoginRedirectDraggableListBuilder",
  *     "form" = {
  *       "add" = "Drupal\cwd_saml_mapping\Form\SamlLoginRedirectForm",
  *       "edit" = "Drupal\cwd_saml_mapping\Form\SamlLoginRedirectForm",
@@ -40,12 +40,14 @@ use Drupal\cwd_saml_mapping\SamlLoginRedirectInterface;
  *     "id" = "id",
  *     "label" = "label",
  *     "uuid" = "uuid",
+ *     "weight" = "weight",
  *   },
  *   config_export = {
  *     "id",
  *     "label",
  *     "roles",
  *     "redirect",
+ *     "weight"
  *   },
  * )
  */
@@ -69,5 +71,10 @@ final class SamlLoginRedirect extends ConfigEntityBase implements SamlLoginRedir
    * The example redirect.
    */
   protected string $redirect;
+
+  /**
+   * The example weight.
+   */
+  protected int $weight;
 
 }
