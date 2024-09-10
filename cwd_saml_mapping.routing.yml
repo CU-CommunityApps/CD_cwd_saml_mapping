@@ -111,3 +111,35 @@ entity.saml_login_redirect.delete_form:
     _title: 'Delete a cwd login redirect'
   requirements:
     _permission: 'administer saml_login_redirect'
+
+entity.saml_logout_redirect.collection:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-logout-redirect'
+  defaults:
+    _entity_list: 'saml_logout_redirect'
+    _title: 'SAML Logout Redirect configuration'
+  requirements:
+    _permission: 'administer saml_logout_redirect'
+
+entity.saml_logout_redirect.add_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml_logout_redirect/add'
+  defaults:
+    _entity_form: 'saml_logout_redirect.add'
+    _title: 'Add a saml logout redirect'
+  requirements:
+    _permission: 'administer saml_logout_redirect'
+
+entity.saml_logout_redirect.edit_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-logout-redirect/{saml_logout_redirect}'
+  defaults:
+    _entity_form: 'saml_logout_redirect.edit'
+    _title: 'Edit a saml logout redirect'
+  requirements:
+    _permission: 'administer saml_logout_redirect'
+
+entity.saml_logout_redirect.delete_form:
+  path: '/admin/config/people/cwd-saml-mapping-config/saml-logout-redirect/{saml_logout_redirect}/delete'
+  defaults:
+    _entity_form: 'saml_logout_redirect.delete'
+    _title: 'Delete a saml logout redirect'
+  requirements:
+    _permission: 'administer saml_logout_redirect'

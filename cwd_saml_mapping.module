@@ -285,21 +285,51 @@ function cwd_saml_mapping_user_login(UserInterface $account) {
     if (count(array_intersect($roles, $config_roles)) > 0) {
       // get config value of redirect
       $redirect = $config->get('redirect');
-      $redirect_compenents = array_filter(explode('/', $redirect));
-      if (in_array('{uid}', $redirect_compenents)) {
-        $redirect = str_replace('{uid}', $account->id(), $redirect);
-      }
-      if (in_array('{username}', $redirect_compenents)) {
-        $redirect = str_replace('{username}', $account->getUsername(), $redirect);
-      }
-      if (in_array('{email}', $redirect_compenents)) {
-        $redirect = str_replace('{email}', $account->getEmail(), $redirect);
-      }
+      $redirect = _cwd_saml_mapping_return_token_url($redirect, $account);
       \Drupal::service('request_stack')->getCurrentRequest()->query->set('destination', $redirect);
       return;
     }
   
   }
-
-
 }
+function cwd_saml_mapping_user_logout($account) {
+  $entity_ids = \Drupal::entityQuery('saml_logout_redirect')->condition('status', 1)->execute();
+  if($entity_ids == null) {
+    return;
+  }
+
+  $configs = \Drupal::entityTypeManager()->getStorage('saml_logout_redirect')->loadMultiple($entity_ids);
+  usort($configs, function ($a, $b) {
+    return $a->get('weight') <=> $b->get('weight');
+  });
+
+  $roles = $account->getRoles();
+  foreach ($configs as $config) {
+    $config_roles = explode(',', $config->get('roles'));
+
+    // if roles and config_roles have any common element then redirect
+    if (count(array_intersect($roles, $config_roles)) > 0) {
+      // get config value of redirect
+      $redirect = $config->get('redirect');
+      $redirect = _cwd_saml_mapping_return_token_url($redirect, $account);
+      \Drupal::service('request_stack')->getCurrentRequest()->query->set('destination', $redirect);
+      return;
+    }
+  
+  }
+}
+
+function _cwd_saml_mapping_return_token_url($redirect_string, $account) {
+  $redirect_compenents = array_filter(explode('/', $redirect_string));
+  if (in_array('{uid}', $redirect_compenents)) {
+    $redirect_string = str_replace('{uid}', $account->id(), $redirect_string);
+  }
+  if (in_array('{username}', $redirect_compenents)) {
+    $redirect_string = str_replace('{username}', $account->getUsername(), $redirect_string);
+  }
+  if (in_array('{email}', $redirect_compenents)) {
+    $redirect_string = str_replace('{email}', $account->getEmail(), $redirect_string);
+  }
+  return $redirect_string;
+}
+

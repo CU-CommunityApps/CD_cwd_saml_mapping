@@ -3,3 +3,6 @@ administer saml_role_mapping:
 
 administer saml_login_redirect:
   title: 'Administer cwd login redirect'
+
+administer saml_logout_redirect:
+  title: 'Administer saml logout redirect'

@@ -1,0 +1,18 @@
+cwd_saml_mapping.saml_logout_redirect.*:
+  type: config_entity
+  label: SAML Logout Redirect
+  mapping:
+    id:
+      type: string
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: string
+    roles:
+      type: string
+    redirect:
+      type: string
+    weight:
+      type: integer

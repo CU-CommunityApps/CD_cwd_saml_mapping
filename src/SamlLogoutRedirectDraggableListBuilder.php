@@ -11,11 +11,11 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a class to build a listing of saml_login_redirect entities.
+ * Defines a class to build a listing of saml_logout_redirect entities.
  *
- * @see \Drupal\cwd_saml_mapping\Entity\SamlLoginRedirect
+ * @see \Drupal\cwd_saml_mapping\Entity\SamlLogoutRedirect
  */
-class SamlLoginRedirectDraggableListBuilder extends DraggableListBuilder {
+class SamlLogoutRedirectDraggableListBuilder extends DraggableListBuilder {
     
     /**
      * The messenger.
@@ -51,7 +51,7 @@ class SamlLoginRedirectDraggableListBuilder extends DraggableListBuilder {
      * {@inheritdoc}
      */
     public function getFormId() {
-        return 'saml_login_redirect_order';
+        return 'bill_form';
     }
     
     /**
