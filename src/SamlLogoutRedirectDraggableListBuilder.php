@@ -51,7 +51,7 @@ class SamlLogoutRedirectDraggableListBuilder extends DraggableListBuilder {
      * {@inheritdoc}
      */
     public function getFormId() {
-        return 'bill_form';
+        return 'saml_logout_redirect_order';
     }
     
     /**

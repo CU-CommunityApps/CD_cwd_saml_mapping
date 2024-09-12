@@ -266,7 +266,13 @@ function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
    }
 }
 
+
 function cwd_saml_mapping_user_login(UserInterface $account) {
+  $relay_state = $_REQUEST['RelayState'];
+  if($relay_state != "/") {
+    return;
+  }
+
   $entity_ids = \Drupal::entityQuery('saml_login_redirect')->condition('status', 1)->execute();
   if($entity_ids == null) {
     return;
@@ -293,6 +299,7 @@ function cwd_saml_mapping_user_login(UserInterface $account) {
   }
 }
 function cwd_saml_mapping_user_logout($account) {
+
   $entity_ids = \Drupal::entityQuery('saml_logout_redirect')->condition('status', 1)->execute();
   if($entity_ids == null) {
     return;
