@@ -14,5 +14,9 @@ cwd_saml_mapping.saml_role_mapping.*:
       type: string
     samlprop:
       type: string
+    samlother:
+      type: string
     values:
+      type: string
+    specialmatchcriteria:
       type: string

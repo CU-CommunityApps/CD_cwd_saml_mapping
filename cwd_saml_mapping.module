@@ -26,6 +26,7 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
   $rolesUnableToEvaluateForRemoval = [];
   foreach ($configs as $role_assigment_config) {
     //Create a list of all roles managed by saml properties
+    $needsRole = false;
     $role = $role_assigment_config->get('role');
     if (!in_array($role, $samlManagedRoles)) {
       $samlManagedRoles[] = $role;
@@ -33,6 +34,9 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
 
     //Property in saml we are looking at
     $samlprop = $role_assigment_config->get('samlprop');
+    if($samlprop == "other") {
+      $samlprop = $role_assigment_config->get('samlother');
+    }
 
     //Drupal's accepted values we configure on our end
     $values = explode("\r\n", $role_assigment_config->get('values'));
@@ -52,15 +56,52 @@ function cwd_saml_mapping_saml_sp_drupal_login_user_attributes_alter($user, $att
       continue;
     }
 
-    //If saml attribute has more than one value in a field we will look at all values
-    if (count($attributes[$samlprop]) > 1) {
-      $saml_pro_data = $attributes[$samlprop];
-      $needsRole = count(array_intersect($saml_pro_data, $values)) > 0;
-    }
-    else {
-      //All others we look for a single value in our accepted values for the SAML property
-      $saml_pro_data = $attributes[$samlprop][0];
-      $needsRole = in_array($saml_pro_data, $values);
+    $specialmatchcriteria = $role_assigment_config->get('specialmatchcriteria') ?? "none";
+    switch($specialmatchcriteria) {
+      case "none":
+        //If saml attribute has more than one value in a field we will look at all values
+        if (count($attributes[$samlprop]) > 1) {
+          $saml_pro_data = $attributes[$samlprop];
+          $needsRole = count(array_intersect($saml_pro_data, $values)) > 0;
+        }
+        else {
+          //All others we look for a single value in our accepted values for the SAML property
+          $saml_pro_data = $attributes[$samlprop][0];
+          $needsRole = in_array($saml_pro_data, $values);
+        }
+        break;
+      case "contains":
+        //If saml attribute has more than one value in a field we will look at all values
+        if (count($attributes[$samlprop]) > 1) {
+          $saml_pro_data = $attributes[$samlprop];
+          //Search each saml data element in array if it contains any of the accepted values
+          foreach($saml_pro_data as $saml_data_element) {
+            if($needsRole) {
+              break;
+            }
+            //Find any partial containing match of the value we are searching for
+            foreach($values as $stringtofind) {
+              if(str_contains($saml_data_element,$stringtofind)) {
+                $needsRole = true;
+                break;
+              }
+            }
+          }
+        }
+        else {
+          //Single valued saml property
+          $saml_pro_data = $attributes[$samlprop][0];
+          //Check if the saml data contains any of our accepted values
+          foreach($values as $stringtofind) {
+            if(str_contains($saml_pro_data,$stringtofind)) {
+              $needsRole = true;
+              break;
+            }
+          }
+        }
+        break;
+      default:
+        break;
     }
 
     //If condition is met to add this role add to our array for processing after all configs have been evaluated
@@ -266,7 +307,6 @@ function cwd_saml_mapping_local_tasks_alter(&$local_tasks) {
    }
 }
 
-
 function cwd_saml_mapping_user_login(UserInterface $account) {
   $relay_state = $_REQUEST['RelayState'];
   if($relay_state != "/") {
@@ -338,5 +378,45 @@ function _cwd_saml_mapping_return_token_url($redirect_string, $account) {
     $redirect_string = str_replace('{email}', $account->getEmail(), $redirect_string);
   }
   return $redirect_string;
+}
+
+function cwd_saml_mapping_preprocess_page(&$variables) {
+  $config = \Drupal::config('cwd_saml_mapping.config_form');
+  $restrict_all_pages = $config->getRawData()['restrict_all_pages'] ?? false;
+  if($restrict_all_pages) {
+    $allowed_paths = [
+      "/user/login",
+      "/accessdenied",
+    ];
+
+    $restriction_choice = $config->getRawData()['restrict_pages_url'];
+    switch($restriction_choice) {
+      case "direct":
+        $url_string = "/saml/drupal_login";
+        $samlsp_login_config = \Drupal::config('saml_sp_drupal_login.config');
+        $idps = $samlsp_login_config->getRawData()['idp'];
+        if (isset($_ENV['PANTHEON_ENVIRONMENT']) && $_ENV['PANTHEON_ENVIRONMENT'] === 'live') {
+          $url_string .= "/" . $idps['cornell_prod'];
+        }
+        else { 
+          $url_string .= "/" . $idps['cornell_test'];
+        }
+        break;
+      case "login":
+      default:
+        $url_string = "/user/login";
+        break;
+    }
+
+    $current_user = \Drupal::currentUser();
+    $current_path = \Drupal::service('path.current')->getPath();
+    $url_string .= "?returnTo=" .$current_path;
+    
+    if(!in_array($current_path,$allowed_paths) && $current_user->isAnonymous() ) {
+      $response = new RedirectResponse($url_string);
+      \Drupal::service('kernel')->rebuildContainer();
+      $response->send();
+    }
+  }
 }
 

@@ -1,0 +1,6 @@
+cwd_saml_mapping:
+  js:
+    js/cwd_saml_mapping.js: {}
+  css:
+    component:
+      css/cwd_saml_mapping.css: {}
