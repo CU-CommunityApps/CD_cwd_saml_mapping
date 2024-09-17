@@ -1,6 +1,5 @@
 <?php
 
-use Drupal;
 use Drupal\user\UserInterface;
 use Drupal\cwd_saml_mapping\ShibbolethHelper;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
