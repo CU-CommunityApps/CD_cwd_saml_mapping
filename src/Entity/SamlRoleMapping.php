@@ -44,7 +44,9 @@ use Drupal\cwd_saml_mapping\SamlRoleMappingInterface;
  *     "label",
  *     "role",
  *     "samlprop",
+ *     "samlother",
  *     "values",
+ *     "specialmatchcriteria",
  *   },
  * )
  */
@@ -53,5 +55,7 @@ final class SamlRoleMapping extends ConfigEntityBase implements SamlRoleMappingI
   protected string $label;
   protected string $role;
   protected string $samlprop;
+  protected string $samlother;
   protected string $values;
+  protected string $specialmatchcriteria;
 }

@@ -16,8 +16,8 @@ final class SamlRoleMappingForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state): array {
-
     $form = parent::form($form, $form_state);
+    $form['#attached']['library'][] = 'cwd_saml_mapping/cwd_saml_mapping';
 
     $form['label'] = [
       '#type' => 'textfield',
@@ -58,11 +58,27 @@ final class SamlRoleMappingForm extends EntityForm {
       '#default_value' => $this->entity->get('samlprop'),
     ];
 
+    $form['samlother'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('SAML Property Other (if SAML Property Other)'),
+      '#default_value' => $this->entity->get('samlother'),
+    ];
+
     $form['values'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Accepted Values'),
       '#description' => $this->t('The values that will allow this role to be added. One per line'),
       '#default_value' => $this->entity->get('values'),
+    ];
+
+    $form['specialmatchcriteria'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Way to match (use in special cases only)'),
+      '#options' => [
+        "none" => "none",
+        "contains" => "contains",
+      ],
+      '#default_value' => $this->entity->get('specialmatchcriteria') ?? "none"
     ];
     $form['status'] = [
       '#type' => 'checkbox',
