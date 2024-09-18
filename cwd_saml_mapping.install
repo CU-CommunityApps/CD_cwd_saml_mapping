@@ -8,3 +8,10 @@ function cwd_saml_mapping_update_91001() {
         $config->save();
     }
 }
+
+function cwd_saml_mapping_update_91002() {
+    $entity_type_definition = \Drupal::service('entity_type.manager')->getDefinition('saml_login_redirect');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type_definition);  
+    $entity_type_definition = \Drupal::service('entity_type.manager')->getDefinition('saml_logout_redirect');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type_definition);   
+}
