@@ -1,4 +1,7 @@
 <?php
+/**
+ * Update all saml_role_mapping entities to have new samlother and specialmatchcriteria values.
+ */
 function cwd_saml_mapping_update_91001() {
     $entity_ids = \Drupal::entityQuery('saml_role_mapping')->execute();
     $configs = \Drupal::entityTypeManager()->getStorage('saml_role_mapping')->loadMultiple($entity_ids);
@@ -7,4 +10,14 @@ function cwd_saml_mapping_update_91001() {
         $config->set('specialmatchcriteria', 'none');
         $config->save();
     }
+}
+
+/**
+ * Register entities saml_login_redirect and saml_logout_redirect.
+ */
+function cwd_saml_mapping_update_91002() {
+    $entity_type_definition = \Drupal::service('entity_type.manager')->getDefinition('saml_login_redirect');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type_definition);  
+    $entity_type_definition = \Drupal::service('entity_type.manager')->getDefinition('saml_logout_redirect');
+    \Drupal::entityDefinitionUpdateManager()->installEntityType($entity_type_definition);   
 }

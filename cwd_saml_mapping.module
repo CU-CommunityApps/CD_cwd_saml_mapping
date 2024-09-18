@@ -371,7 +371,7 @@ function _cwd_saml_mapping_return_token_url($redirect_string, $account) {
     $redirect_string = str_replace('{uid}', $account->id(), $redirect_string);
   }
   if (in_array('{username}', $redirect_compenents)) {
-    $redirect_string = str_replace('{username}', $account->getUsername(), $redirect_string);
+    $redirect_string = str_replace('{username}', $account->getAccountName(), $redirect_string);
   }
   if (in_array('{email}', $redirect_compenents)) {
     $redirect_string = str_replace('{email}', $account->getEmail(), $redirect_string);
